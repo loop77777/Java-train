@@ -1,0 +1,699 @@
+package sample;
+
+interface SalaryCalculator {
+	double calculate(double baseSalary, double allowance);
+
+	default void printNotice() {
+		System.out.println("Notice:tax deduction.");
+	}
+
+	static double calculatePFDeduction(double baseSalary) {
+		return baseSalary * 0.12;
+	}
+}
+
+public class CustomFIDemo {
+
+	public static void main(String[] args) {
+		SalaryCalculator standardPay = (base, allowance) -> base + allowance;
+
+		SalaryCalculator appraisalPay = (base, allowance) -> (base * 1.15) + allowance;
+
+		double karthikPay = standardPay.calculate(60000, 10000);
+		double ananyaPay = standardPay.calculate(45000, 8000);
+		System.out.println("Standard monthly pay for karthik:" + karthikPay);
+		System.out.println("Standard monthly pay for ananya:" + ananyaPay);
+
+		System.out.println("PF Deduction for Suresh(base 75K):" + SalaryCalculator.calculatePFDeduction(75000));
+	}
+}
+
+---------------------------------------------------
+
+package sample;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class DateTimeJava7 {
+	public static void main(String[] args) throws Exception {
+		System.out.println("===Java 7 Date &time===");
+
+		Calendar cal = Calendar.getInstance();
+		System.out.println("Calender"+cal);
+
+		cal.set(2021, Calendar.JULY, 15, 9, 30, 0);
+		System.out.println("Calender"+cal);
+
+		Date joiningDate = cal.getTime();
+		System.out.println("Joining Date"+joiningDate);
+
+		cal.add(Calendar.YEAR, 3);
+		System.out.println("Calender"+cal);
+
+		Date reviewDate = cal.getTime();
+		System.out.println("Review Date"+reviewDate);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyyHH:mm:ss");
+
+		System.out.println("Java 7 joining date for KArthik:" + sdf.format(joiningDate));
+		System.out.println("Java7 Review Date for Karthik" + sdf.format(reviewDate));
+
+		long startMs = System.currentTimeMillis();
+		Thread.sleep(100);
+		long endMs = System.currentTimeMillis();
+		long durationMs = endMs - startMs;
+		System.out.println("Java 7 Elapsed Shift time:" + durationMs + "ms");
+
+	}
+}
+
+---------------------------------
+package sample;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+
+public class DateTimeJava8 {
+	public static void main(String[] args) throws Exception {
+		System.out.println("==Java 8 Date time");
+
+		LocalDate joiningDate = LocalDate.of(2021, Month.JULY, 15);
+		System.out.println("Joining Date:"+joiningDate);
+
+		LocalTime shiftStart = LocalTime.of(9, 30, 0);
+		System.out.println("Shifting time:"+shiftStart);
+
+		LocalDateTime currentSession = LocalDateTime.now();
+		System.out.println("Current Date:"+currentSession);
+
+		LocalDate reviewDate = joiningDate.plusYears(3);
+		System.out.println("REview Date:"+reviewDate);
+
+		Period tenure = Period.between(joiningDate, LocalDate.now());
+		System.out.println("Karthiks tenure:" + tenure.getYears() + "Years," + tenure.getMonths() + "Months,"
+				+ tenure.getDays() + "Days");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyyHH:mm:ss");
+		System.out.println("Java8 Jioning date:" + joiningDate.atTime(shiftStart).format(formatter));
+		System.out.println("Java8 Review Date:" + reviewDate.atTime(shiftStart).format(formatter));
+
+		Instant startInstant = Instant.now();
+		Thread.sleep(100);
+
+		Instant endInstant = Instant.now();
+
+		Duration elapsed = Duration.between(startInstant, endInstant);
+
+		System.out.println("Java8 elapsed time:" + elapsed.toMillis() + "ms");
+	}
+
+}
+
+----------------------------------
+package sample;
+
+// Java 7 Core Interface
+interface Vehicle {
+	void start();
+	// IF WE ADDED 'void stop();' HERE IN JAVA 7, ALL IMPLEMENTING CLASSES WOULD
+	// BREAK!
+}
+
+// Java 7 Workaround: Abstract Adapter Class to support future method additions
+abstract class AbstractVehicleAdapter implements Vehicle {
+	// Adapter provides default behavior to prevent class compilation breakage
+	public void stop() {
+		System.out.println("[JAVA 7 DEFAULT] Vehicle engine stopped safely.");
+	}
+}
+
+// Class 1: AutoRickshaw (Extends Adapter)
+class AutoRickshaw extends AbstractVehicleAdapter {
+	@Override
+	public void start() {
+		System.out.println("[JAVA 7 AUTO] AutoRickshaw started by Ramesh");
+	}
+}
+
+// Class 2: KSRTC Bus (Extends Adapter)
+class KSRTCBus extends AbstractVehicleAdapter {
+	@Override
+	public void start() {
+		System.out.println("[JAVA 7 BUS] KSRTC Bus started by Suresh");
+	}
+
+	// Custom stop logic
+	@Override
+	public void stop() {
+		System.out.println("[JAVA 7 BUS] Air brakes applied. KSRTC Bus stopped by Suresh.");
+	}
+}
+
+public class DefaultMethodJava7 {
+	public static void main(String[] args) {
+		AutoRickshaw auto = new AutoRickshaw();
+		KSRTCBus bus = new KSRTCBus();
+
+		auto.start();
+		auto.stop(); // Inherited from AbstractVehicleAdapter
+
+		System.out.println();
+
+		bus.start();
+		bus.stop(); // Overridden in KSRTCBus
+	}
+}
+
+------------------------------------------
+package sample;
+
+interface Vehicles {
+	void start();
+
+	// Default method added without breaking existing implementations
+	default void stop() {
+		System.out.println("[JAVA 8 DEFAULT] Vehicle stopped safely (Default Implementation)");
+	}
+
+	// Static utility method directly inside interface
+	static void serviceInfo() {
+		System.out.println("[JAVA 8 STATIC] Official Transport Service Utility Check");
+	}
+}
+
+// Second Interface declaring conflicting default method
+interface SecurityAlarm {
+	default void stop() {
+		System.out.println("[JAVA 8 ALARM] Security Alarm deactivated");
+	}
+}
+
+// Class 1: AutoRickshaw inherits default stop() automatically
+class AutoRickshaws implements Vehicles {
+	@Override
+	public void start() {
+		System.out.println("[JAVA 8 AUTO] AutoRickshaw started by Ramesh");
+	}
+	// 'stop()' is inherited automatically from Vehicle — zero code breakage!
+}
+
+// Class 2: KSRTCBus overrides default stop() with custom behavior
+class KSRTCBuses implements Vehicles {
+	@Override
+	public void start() {
+		System.out.println("[JAVA 8 BUS] KSRTC Bus started by Suresh");
+	}
+
+	@Override
+	public void stop() {
+		System.out.println("[JAVA 8 BUS] Air brakes applied. KSRTC Bus stopped by Suresh.");
+	}
+}
+
+// Class 3: Resolving Conflict between Vehicle.stop() and SecurityAlarm.stop()
+class PrivateSUV implements Vehicles, SecurityAlarm {
+	@Override
+	public void start() {
+		System.out.println("[JAVA 8 SUV] Private SUV engine started by Karthik");
+	}
+
+	// Rule 3: Explicit Ambiguity Resolution required using
+	// Interface.super.methodName()
+	@Override
+	public void stop() {
+		System.out.println("\n--- Resolving Interface Conflict for SUV ---");
+		Vehicles.super.stop(); // Explicitly invoking Vehicle's default implementation
+		SecurityAlarm.super.stop(); // Explicitly invoking SecurityAlarm's default implementation
+	}
+}
+
+public class DefaultMethodJava8 {
+	public static void main(String[] args) {
+
+		System.out.println("=== 1. DEFAULT METHODS & BACKWARDS COMPATIBILITY ===");
+		AutoRickshaw auto = new AutoRickshaw();
+		auto.start();
+		auto.stop(); // Executes Vehicle default body
+
+		System.out.println();
+
+		KSRTCBus bus = new KSRTCBus();
+		bus.start();
+		bus.stop(); // Executes overridden KSRTCBus body
+
+		System.out.println("\n=== 2. STATIC METHODS IN INTERFACES ===");
+		Vehicles.serviceInfo(); // Static call directly on Interface
+
+		System.out.println("\n=== 3. MULTIPLE INHERITANCE CONFLICT RESOLUTION ===");
+		PrivateSUV suv = new PrivateSUV();
+		suv.start();
+		suv.stop(); // Executes explicitly resolved interface calls
+	}
+}
+---------------------------------------------
+package sample;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+class Employees {
+	private String name;
+	private double salary;
+
+	public Employees(String name, double salary) {
+		this.name = name;
+		this.salary = salary;
+
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public double getSalary() {
+		return salary;
+	}
+
+	@Override
+	public String toString() {
+		return name + "(" + (long) salary + ")";
+	}
+
+}
+
+public class LamdaDeepDiveDemo {
+	public static void main(String[] args) {
+		System.out.println("===1.thread creatoion and behavoiur==");
+
+		Runnable r1 = new Runnable() {
+			public void run() {
+				System.out.println("Java 7 Ananymonous class...tax Deduction");
+			}
+		};
+		Runnable r2 = () -> System.out.println("Java 8 lamda tax deduction");
+
+		new Thread(r1).start();
+		new Thread(r2).start();
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException ignored) {
+		}
+		System.out.println("\n==2.Comparator sorting demo==");
+
+		List<Employee> team = new ArrayList<>();
+
+		team.add(new Employee("Suresh", 75000));
+		team.add(new Employee("Meenakshi", 52000));
+		team.add(new Employee("Karthik", 82000));
+		team.add(new Employee("Venakt", 45000));
+		System.out.println("Original EMployee Roster:" + team);
+
+		Collections.sort(team, new Comparator<Employee>() {
+			public int compare(Employee e1, Employee e2) {
+				return Double.compare(e1.getSalary(), e2.getSalary());
+			}
+		});
+		System.out.println("\n Java 7 Sorted salary(ascending)" + team);
+
+		team.sort((e1, e2) -> Double.compare(e2.getSalary(), e1.getSalary()));
+		System.out.println("Java 8 Sorted by salary(desc)" + team);
+
+	}
+}
+
+----------------------------------
+package sample;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+class Customers {
+	private String name;
+
+	public Customers() {
+		this.name = "Guest User";
+	}
+
+	public Customers(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public static double calculateTax(double salary) {
+		return salary * 0.10; // 10% TDS Tax
+	}
+}
+
+class ConsolePrinter {
+	public void printInfo(String message) {
+		System.out.println("[CONSOLE LOG] " + message);
+	}
+}
+
+// Custom Interface Factory for Java 7
+interface CustomerFactory {
+	Customers create(String name);
+}
+
+public class MethodReferenceJava7 {
+	public static void main(String[] args) {
+		// 1. Static Method Wrapper (Anonymous Class)
+		double tax = Customers.calculateTax(60000.0);
+		System.out.println("Java 7 Static Call Tax for Karthik: ₹" + tax);
+
+		// 2. Instance Method Wrapper
+		final ConsolePrinter printer = new ConsolePrinter();
+		printer.printInfo("Processing record for Ananya");
+
+		// 3. Arbitrary Instance Method (Sorting Names)
+		List<String> customerNames = new ArrayList<String>();
+		customerNames.add("Suresh");
+		customerNames.add("Ananya");
+		customerNames.add("Karthik");
+
+		Collections.sort(customerNames, new Comparator<String>() {
+			@Override
+			public int compare(String s1, String s2) {
+				return s1.compareTo(s2);
+			}
+		});
+
+		System.out.print("Java 7 Sorted List: ");
+		for (String name : customerNames) {
+			System.out.print(name + " ");
+		}
+		System.out.println();
+
+		// 4. Constructor Wrapper (Factory)
+		CustomerFactory factory = new CustomerFactory() {
+			@Override
+			public Customers create(String name) {
+				return new Customers(name);
+			}
+		};
+		Customers customer = factory.create("Meenakshi");
+		System.out.println("Java 7 Factory Created: " + customer.getName());
+	}
+}
+------------------------------
+package sample;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+class Employee {
+	private String name;
+	private double salary;
+
+	public Employee(String name, double salary) {
+		this.name = name;
+		this.salary = salary;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public double getSalary() {
+		return salary;
+	}
+
+}
+
+public class RevolutionDemo {
+
+	public static void main(String[] args) {
+		List<Employee> employees = List.of(new Employee("Ananya", 60000), new Employee("Karthik", 80000),
+				new Employee("Ram", 45000));
+
+		List<Employee> highEarnersJava7 = new ArrayList<>();
+		for (Employee e : employees) {
+			if (e.getSalary() > 50000) {
+				highEarnersJava7.add(e);
+			}
+		}
+
+		// Jva 8
+
+		List<Employee> highEarnersJava8 = employees.stream().filter(e -> e.getSalary() > 50000)
+				.collect(Collectors.toList());
+
+		System.out.println("Java 7:" + highEarnersJava7.size());
+		System.out.println("Java 8:" + highEarnersJava8.size());
+	}
+}
+
+------------------------------------
+package sample;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+class Dev {
+    private String name;
+    private String department;
+    private double salary;
+    private int age;
+
+    public Dev(String name, String department, double salary, int age) {
+        this.name = name;
+        this.department = department;
+        this.salary = salary;
+        this.age = age;
+    }
+
+    public String getName() { return name; }
+    public String getDepartment() { return department; }
+    public double getSalary() { return salary; }
+    public int getAge() { return age; }
+
+    @Override
+    public String toString() {
+        return name + " (" + department + ", ₹" + (long)salary + ")";
+    }
+}
+
+public class StreamJava7Demo {
+    public static void main(String[] args) {
+        List<Dev> devs = new ArrayList<Dev>();
+        devs.add(new Dev("Karthik", "IT", 85000, 30));
+        devs.add(new Dev("Ananya", "HR", 55000, 45));
+        devs.add(new Dev("Suresh", "IT", 95000, 28));
+        devs.add(new Dev("Meenakshi", "HR", 60000, 35));
+        devs.add(new Dev("Lakshmi", "IT", 72000, 26));
+
+        System.out.println("=== 1. FILTER, TRANSFORM, AND LIMIT (Java 7) ===");
+        List<String> highEarnerNames = new ArrayList<String>();
+        int matchCount = 0;
+
+        for (Dev d : devs) {
+            System.out.println("Evaluating: " + d.getName());
+            if (d.getSalary() >= 60000) {
+                System.out.println("Converting: " + d.getName());
+                highEarnerNames.add(d.getName().toUpperCase());
+                matchCount++;
+                if (matchCount == 2) { // Manual limit / short-circuit implementation
+                    break;
+                }
+            }
+        }
+        System.out.println("Filtered Names (Max 2): " + highEarnerNames);
+
+
+        System.out.println("\n=== 2. GROUP BY DEPARTMENT (Java 7) ===");
+        Map<String, List<Dev>> byDept = new HashMap<String, List<Dev>>();
+        for (Dev d : devs) {
+            String dept = d.getDepartment();
+            if (!byDept.containsKey(dept)) {
+                byDept.put(dept, new ArrayList<Dev>());
+            }
+            byDept.get(dept).add(d);
+        }
+        System.out.println("IT Department Count: " + byDept.get("IT").size());
+
+
+        System.out.println("\n=== 3. PARTITION BY SALARY > 60000 (Java 7) ===");
+        Map<Boolean, List<Dev>> partitioned = new HashMap<Boolean, List<Dev>>();
+        partitioned.put(true, new ArrayList<Dev>());
+        partitioned.put(false, new ArrayList<Dev>());
+
+        for (Dev d : devs) {
+            boolean isHigh = d.getSalary() > 60000;
+            partitioned.get(isHigh).add(d);
+        }
+        System.out.println("High Earners Count (>60k): " + partitioned.get(true).size());
+
+
+        System.out.println("\n=== 4. MANUAL AGE STATISTICS (Java 7) ===");
+        int sumAge = 0;
+        int minAge = Integer.MAX_VALUE;
+        int maxAge = Integer.MIN_VALUE;
+
+        for (Dev d : devs) {
+            int age = d.getAge();
+            sumAge += age;
+            if (age < minAge) minAge = age;
+            if (age > maxAge) maxAge = age;
+        }
+        double avgAge = (double) sumAge / devs.size();
+
+        System.out.println("Average Age : " + avgAge);
+        System.out.println("Max Age     : " + maxAge);
+        System.out.println("Min Age     : " + minAge);
+    }
+}
+
+-------------------------------------
+
+package sample;
+
+import java.util.Arrays;
+import java.util.IntSummaryStatistics;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+class Deva {
+	private String name;
+	private String department;
+	private double salary;
+	private int age;
+
+	public Deva(String name, String department, double salary, int age) {
+		this.name = name;
+		this.department = department;
+		this.salary = salary;
+		this.age = age;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public double getSalary() {
+		return salary;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	@Override
+	public String toString() {
+		return name + " (" + department + ", ₹" + (long) salary + ")";
+	}
+}
+
+public class StreamJava8Demo {
+	public static void main(String[] args) {
+		List<Dev> devs = Arrays.asList(new Dev("Karthik", "IT", 85000, 30), new Dev("Ananya", "HR", 55000, 45),
+				new Dev("Suresh", "IT", 95000, 28), new Dev("Meenakshi", "HR", 60000, 35),
+				new Dev("Lakshmi", "IT", 72000, 26));
+
+		/* List<String> highEarnerNames = new ArrayList<String>();
+	        int matchCount = 0;
+
+	        for (Dev d : devs) {
+	            System.out.println("Evaluating: " + d.getName());
+	            if (d.getSalary() >= 60000) {
+	                System.out.println("Converting: " + d.getName());
+	                highEarnerNames.add(d.getName().toUpperCase());
+	                matchCount++;
+	                if (matchCount == 2) { // Manual limit / short-circuit implementation
+	                    break;
+	                }
+	            }
+	        }
+	        System.out.println("Filtered Names (Max 2): " + highEarnerNames);*/
+
+
+		System.out.println("=== 1. PIPELINE EXECUTION & LAZY EVALUATION (Java 8) ===");
+		List<String> highEarnerNames = devs.stream().filter(d -> {
+			System.out.println("Filter evaluating: " + d.getName());
+			return d.getSalary() >= 60000;
+		}).map(d -> {
+			System.out.println("Map converting: " + d.getName());
+			return d.getName().toUpperCase();
+		}).limit(2) // Short-circuits loop when 2 matches are collected!
+				.collect(Collectors.toList());
+
+		System.out.println("Filtered Names (Max 2): " + highEarnerNames);
+
+		 /* System.out.println("\n=== 2. GROUP BY DEPARTMENT (Java 7) ===");
+	        Map<String, List<Dev>> byDept = new HashMap<String, List<Dev>>();
+	        for (Dev d : devs) {
+	            String dept = d.getDepartment();
+	            if (!byDept.containsKey(dept)) {
+	                byDept.put(dept, new ArrayList<Dev>());
+	            }
+	            byDept.get(dept).add(d);
+	        }
+	        System.out.println("IT Department Count: " + byDept.get("IT").size());*/
+
+		System.out.println("\n=== 2. GROUP BY DEPARTMENT (Java 8) ===");
+		Map<String, List<Dev>> byDept = devs.stream().collect(Collectors.groupingBy(Dev::getDepartment));
+
+		System.out.println("IT Department Count: " + byDept.get("IT").size());
+
+		 /*System.out.println("\n=== 3. PARTITION BY SALARY > 60000 (Java 7) ===");
+	        Map<Boolean, List<Dev>> partitioned = new HashMap<Boolean, List<Dev>>();
+	        partitioned.put(true, new ArrayList<Dev>());
+	        partitioned.put(false, new ArrayList<Dev>());
+
+	        for (Dev d : devs) {
+	            boolean isHigh = d.getSalary() > 60000;
+	            partitioned.get(isHigh).add(d);
+	        }
+	        System.out.println("High Earners Count (>60k): " + partitioned.get(true).size());*/
+
+		System.out.println("\n=== 3. PARTITION BY SALARY THRESHOLD (>60000) (Java 8) ===");
+		Map<Boolean, List<Dev>> partitioned = devs.stream()
+				.collect(Collectors.partitioningBy(d -> d.getSalary() > 60000));
+
+		System.out.println("High Earners Count (>60k): " + partitioned.get(true).size());
+		System.out.println("Others Count (<=60k):     " + partitioned.get(false).size());
+
+		/*
+
+	        for (Dev d : devs) {
+	            int age = d.getAge();
+	            sumAge += age;
+	            if (age < minAge) minAge = age;
+	            if (age > maxAge) maxAge = age;
+	        }
+	        double avgAge = (double) sumAge / devs.size();*/
+
+		System.out.println("\n=== 4. COLLECTORS.SUMMARIZINGINT (Java 8) ===");
+		IntSummaryStatistics ageStats = devs.stream().collect(Collectors.summarizingInt(Dev::getAge));
+
+		System.out.println("Average Age : " + ageStats.getAverage());
+		System.out.println("Max Age     : " + ageStats.getMax());
+		System.out.println("Min Age     : " + ageStats.getMin());
+		System.out.println("Total Count : " + ageStats.getCount());
+		System.out.println("Sum of Ages : " + ageStats.getSum());
+	}
+}
+
+------------------------------------------
