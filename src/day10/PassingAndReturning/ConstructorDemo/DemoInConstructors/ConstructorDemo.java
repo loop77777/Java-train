@@ -1,30 +1,32 @@
-package day10.PassingAndReturning.ConstructorDemo;
+package day10.PassingAndReturning.ConstructorDemo.DemoInConstructors;
 
-class GrandFather
-{
+class GrandFather {
+
     public GrandFather(int a) {
         System.out.println("GrandFather Class Constructor");
     }
 }
 
-class Father extends day10.PassingAndReturning.GrandFather {
-    Father()
-    {
+class Father extends GrandFather {
+
+    Father() {
         super(10);
         System.out.println("Father class Constructor");
     }
 }
-class Son extends day10.PassingAndReturning.Father {
-    Son()
-    {//super();
+
+class Son extends Father {
+
+    Son() {
         System.out.println("Son class Constructor");
     }
 }
-class TestMain
-{
+
+class TestMain {
+
     public static void main(String[] args) {
 
-        //Father f=new Father();
-        day10.PassingAndReturning.GrandFather s=new Son();
+        GrandFather s = new Son();
+
     }
 }

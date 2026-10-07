@@ -11,18 +11,6 @@ public class GrandFather
     }
 }
 
-public class Father extends GrandFather {
-    Father()
-    {
-        System.out.println("Father class Constructor");
-    }
-    public Father(int a)
-    {
-        super(a);
-        System.out.println("Father class with parameterised Constructor");
-    }
-}
-
 class TestMain
 {
     public static void main(String[] args) {

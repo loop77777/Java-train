@@ -12,19 +12,3 @@ public abstract class A
     }
     public abstract void show();
 }
-public class B extends A
-{
-    public B()
-    {
-        System.out.println("B class Constructor");
-    }
-    public void show()
-    {
-        System.out.println("Show method in inherited class");
-    }
-    public static void main(String[] args) {
-        A obj=new B();
-        obj.display();
-        obj.show();
-    }
-}

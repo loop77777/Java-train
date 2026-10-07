@@ -16,9 +16,10 @@ class B extends day11.demo.ABExtra.A
 {
     B()
     {
+        super();
         System.out.println("B class Constructor");
     }
-    void show()
+    public void show()
     {
         System.out.println("Show method in inherited class");
     }
