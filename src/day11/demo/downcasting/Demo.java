@@ -1,16 +1,16 @@
 package day11.demo.downcasting;
 
-class Demo
+public class Demo
 {
-    void display()
+    public void display()
     {
         System.out.println("Welcome to Java Training");
     }
 
 }
-class Test extends Demo
+public class Test extends Demo
 {
-    void show()
+    public void show()
     {
         System.out.println("Show method");
     }

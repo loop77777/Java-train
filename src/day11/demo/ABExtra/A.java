@@ -1,24 +1,24 @@
 package day11.demo.ABExtra;
 
-abstract class A
+public abstract class A
 {
-    A()
+    protected A()
     {
         System.out.println("A class Constructor");
     }
-    void display()
+    public void display()
     {
         System.out.println("Display method in Parent class");
     }
-    abstract void show();
+    public abstract void show();
 }
-class B extends A
+public class B extends A
 {
-    B()
+    public B()
     {
         System.out.println("B class Constructor");
     }
-    void show()
+    public void show()
     {
         System.out.println("Show method in inherited class");
     }
