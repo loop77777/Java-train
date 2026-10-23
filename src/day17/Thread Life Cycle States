@@ -1,0 +1,113 @@
+1. Thread Fundamentals & Life Cycle
+A Process is an executing instance of a program with its own memory space. A Thread is a lightweight unit of execution within a process that shares memory and resources with other threads in the same process.
+
++-------------------+
+                 |        NEW        |
+                 +---------+---------+
+                           |
+                        start()
+                           v
+                 +-------------------+
+                 |     RUNNABLE      |
+                 +----+---------+----+
+                     /           \
+     Scheduler picks/             \yield() / Preemption
+                   v               v
+         +-----------+           +-----------+
+         |  RUNNING  | --------> | RUNNABLE  |
+         +-----+-----+           +-----------+
+               |
+    +----------+---------------------------------+
+    |          |                                 |
+    v          v                                 v
++---------+ +---------+                  +---------------+
+| BLOCKED | | WAITING |                  | TIMED_WAITING |
++----+----+ +----+----+                  +-------+-------+
+     |           |                               |
+Lock |    notify()/                      Time    |
+Acq. |    join completes                 Expired |
+     v           v                               v
++---------+ +---------+                  +---------------+
+|RUNNABLE | |RUNNABLE |                  |   RUNNABLE    |
++---------+ +---------+                  +---------------+
+               |
+          run() completes
+               v
+         +-----------+
+         |TERMINATED |
+         +-----------+
+
+
+NEW: Thread instance created, start() not yet invoked.
+
+RUNNABLE: Ready to execute and waiting for CPU allocation from the OS Thread Scheduler.
+
+RUNNING: Executing instructions inside its run() method.
+
+BLOCKED: Waiting to acquire an intrinsic object lock held by another thread.
+
+WAITING: Waiting indefinitely for another thread to perform an action (via wait(), join(), or LockSupport.park()).
+
+TIMED_WAITING: Waiting for a specified time period (via sleep(ms), wait(ms), join(ms)).
+
+TERMINATED: Execution completed or unhandled exception thrown.
+
+
+
++----------------------+
+  |  Main Thread (JVM)   |
+  +----------------------+
+             |
+     1. Creates WorkerTask object
+     2. Instantiates Thread object ("Worker-1")
+     3. Calls thread.start()
+             |
+             +-----------------------+
+             |                       |
+             v                       v
+    Calls JVM native code    Main thread continues
+     (private native         executing main() method
+      void start0())
+             |
+             v
+  +--------------------------------------------+
+  |    Host Operating System Kernel            |
+  +--------------------------------------------+
+  |  Allocates Call Stack, Registers & PC      |
+  |  Creates pthread / OS native thread        |
+  |  Hands over to OS Thread Scheduler       |
+  +--------------------------------------------+
+             |
+             v (When CPU core is allocated)
+  +--------------------------------------------+
+  |    "Worker-1" OS / JVM Thread              |
+  +--------------------------------------------+
+  |  Calls JVM internal thread entry point     |
+  |  Executes WorkerTask.run()                 |
+  |  Prints message to stdout                  |
+  |  Thread completes & resources are cleaned up|
+  +--------------------------------------------+
+
+  +-------------+
+   |     NEW     |  <-- Created via 'new Thread()'
+   +-------------+
+          |
+          | start()
+          v
+   +-------------+
+   |  RUNNABLE   |  <-- Ready to run or executing on CPU core
+   +-------------+
+     |         ^
+     | sleep() | sleep time expires
+     v         |
+   +-------------------+
+   |   TIMED_WAITING   |  <-- Sleeping with a timeout
+   +-------------------+
+          |
+          | run() finishes
+          v
+   +-------------+
+   | TERMINATED  |  <-- Execution finished, thread dead
+   +-------------+
+
+
