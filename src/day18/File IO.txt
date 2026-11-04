@@ -1,0 +1,8 @@
+1. File Navigation & I/O Fundamentals
+Java I/O (Input/Output) is the JVM subsystem for reading data from a source (keyboard, file, network socket) and writing data to a destination (screen, disk file, printer, network socket).
+
+[ Data Source ] ───( InputStream / Reader )───> [ Java Application (JVM) ] ───( OutputStream / Writer )───> [ Data Destination ]
+ (Disk/Network)
+
+ java.io.File represents abstract file and directory pathnames. It does not read or write file payload data directly; it handles structural metadata operations (creation, existence checks, deletion, directory tree listing, and path resolution).
+
